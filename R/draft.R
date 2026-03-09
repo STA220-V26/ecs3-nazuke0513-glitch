@@ -80,3 +80,38 @@ col_vals_not_null(
 
 # HTML report
 export_report(checks, "patient_validation.html")
+
+
+# 3.1 (Factors)
+
+# marital changes
+patients[, marital := factor(
+  marital,
+  levels = c("S", "M", "D", "W"),
+  labels = c("Single", "Married", "Divorced", "Widowed")
+)]
+
+
+# 4. Derived variables
+
+# Age
+patients[, age := as.integer((as.IDate(Sys.Date()) - birthdate) / 365.2425)]
+
+
+# 5. Names
+
+# NA change 
+patients[, names(.SD) := lapply(.SD, \(x) replace_na(x, "")), .SDcols = c("prefix", "middle", "suffix")]
+
+# full_name 
+patients[, full_name := paste(
+  prefix,
+  first,
+  middle,
+  last,
+  fifelse(suffix != "", paste0(", ", suffix), "")
+)]
+
+patients[, full_name := stringr::str_squish(full_name)]
+
+patients[, c("prefix", "first", "middle", "last", "suffix", "maiden") := NULL]
