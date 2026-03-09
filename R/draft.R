@@ -115,3 +115,14 @@ patients[, full_name := paste(
 patients[, full_name := stringr::str_squish(full_name)]
 
 patients[, c("prefix", "first", "middle", "last", "suffix", "maiden") := NULL]
+
+
+# 6.Necessary data?
+#install.packages("leaflet")
+#patients[, driver := !is.na(drivers)][, drivers := NULL]
+
+library(leaflet)
+
+leaflet::leaflet(data = patients) |>
+  leaflet::addTiles() |>
+  leaflet::addMarkers(~lon, ~lat, label = ~full_name)
